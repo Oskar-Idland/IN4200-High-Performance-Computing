@@ -144,8 +144,6 @@ void set_initial_values(double *u, double *u_prev, int m, int n, int o) {
 
 
 void E3() {
-
-
     int m, n, o, N;
     double κ, Δt, Δx, T, c; 
     double *u, *u_prev;
