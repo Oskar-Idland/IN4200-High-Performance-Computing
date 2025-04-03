@@ -25,7 +25,6 @@ void top_n_webpages(int N, double *scores, int n) {
     for (int i = 0; i < N; i++) {
         highest_scores[i] = -1.0;
     }
-    
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < n; j++) {
             if (scores[i] > highest_scores[j]) {

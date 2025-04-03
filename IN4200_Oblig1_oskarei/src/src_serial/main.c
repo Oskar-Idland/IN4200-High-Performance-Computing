@@ -1,41 +1,31 @@
-/** TODO: 
-- Docstring
-- README
-
-Q's:
-- Why do I get all zeros?
-- Why malloc so much?
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../include/function_declarations.h"
 
-// #include "read_graph_from_file1.c"
-// #include "read_graph_from_file2.c"
-// #include "PageRank_iterations1.c"
-// #include "PageRank_iterations2.c"
-
 int main(int argc, char *argv[]) {
-    if (argc != 5) {
-        fprintf(stderr, "Usage: <filename> <damping_constant> <epsilon> <num_pages>\n");
+    if (argc != 6) {
+        fprintf(stderr, "Usage: <small_graph_name> <large_graph_name> <damping_constant> <epsilon> <num_pages>\n");
         fprintf(stderr, "Example: ./main small-webgraph.txt 0.85 0.0001 10\n");
         exit(EXIT_FAILURE);
     }
     
+    char *small_graph_filename = argv[1];
+    char *large_filename = argv[2];
+    double d = atof(argv[3]);
+    double epsilon = atof(argv[4]);
+    int num_pages = atoi(argv[5]);
     
-    char *filename = argv[1];
-    double d = atof(argv[2]);
-    double epsilon = atof(argv[3]);
-    int num_pages = atoi(argv[4]);
-    
-    // Check arguments
-    check_args(filename, &d, &epsilon, &num_pages);
+    // Check arguments having acceptable values
+    printf("Checking arguments...\n");
+    check_args(small_graph_filename, &d, &epsilon, &num_pages);
+    check_args(large_filename, &d, &epsilon, &num_pages); // Called twice to check both file names. 
     
     
     // Read graph from file
     int N;
     double **hyperlink_matrix;
-    read_graph_from_file1(filename, &N, &hyperlink_matrix);
+    printf("Reading graph from file %s...\n", small_graph_filename);
+    read_graph_from_file1(small_graph_filename, &N, &hyperlink_matrix);
     
     
     // Allocate memory for scores
@@ -44,10 +34,11 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Error allocating memory for scores\n");
         exit(EXIT_FAILURE);
     }
+    printf("Calculating PageRank scores...\n");
     PageRank_iterations1(N, hyperlink_matrix, d, epsilon, scores);
     
     // Print scores
-    printf("PageRank scores (non-CSR):\n");
+    printf("PageRank scores:\n");
     top_n_webpages(N, scores, num_pages);
     
     // Free memory
@@ -56,11 +47,13 @@ int main(int argc, char *argv[]) {
     }
     free(hyperlink_matrix);
     free(scores);
+    printf("\n");
     
     // Read graph from file in CSR format
     int *row_ptr, *col_idx;
     double *val;
-    read_graph_from_file2(filename, &N, &row_ptr, &col_idx, &val);
+    printf("Reading graph from file %s...\n", large_filename);
+    read_graph_from_file2(large_filename, &N, &row_ptr, &col_idx, &val);
     
     // Allocate memory for scores
     double *scores_csr = (double *)malloc(N * sizeof(double));
@@ -69,6 +62,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     
+    printf("Calculating PageRank scores (CSR)...\n");
     PageRank_iterations2(N, row_ptr, col_idx, val, d, epsilon, scores_csr);
     
     // Print scores

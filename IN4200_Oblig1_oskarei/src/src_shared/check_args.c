@@ -3,10 +3,10 @@
 #include <string.h>
 
 void check_args(char *filename, double *d, double *epsilon, int *num_pages) { 
-        while (strcmp(filename, "small-webgraph.txt") != 0 &&
-               strcmp(filename, "medium-webgraph.txt") != 0 &&
-               strcmp(filename, "large-webgraph.txt") != 0) {
-    
+    while (strcmp(filename, "small-webgraph.txt")  != 0 &&
+           strcmp(filename, "medium-webgraph.txt") != 0 &&
+           strcmp(filename, "large-webgraph.txt")  != 0) {
+
         fprintf(stderr, "Error: Invalid filename. Expected small-webgraph.txt, medium-webgraph.txt, or large-webgraph.txt. Got: %s\n", filename);
         exit(EXIT_FAILURE);
     }

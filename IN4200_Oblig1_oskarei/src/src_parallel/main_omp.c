@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     int num_pages = atoi(argv[4]);
     
     // Check arguments
+    printf("Checking arguments...\n");
     check_args(filename, &d, &epsilon, &num_pages);
     
     
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
     int N;
     int *row_ptr, *col_idx;
     double *val;
+    printf("Reading graph from file %s...\n", filename);
     read_graph_from_file2(filename, &N, &row_ptr, &col_idx, &val);
     
     // Allocate memory for scores
@@ -31,6 +33,7 @@ int main(int argc, char *argv[]) {
     }
     
     // Perform PageRank iterations
+    printf("Calculating PageRank scores...\n");
     PageRank_iterations2_omp(N, row_ptr, col_idx, val, d, epsilon, scores);
     
     // Print scores

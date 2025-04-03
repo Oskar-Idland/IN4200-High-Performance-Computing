@@ -1,7 +1,6 @@
 #include <stdbool.h>
 
 void get_dangling_pages1(int N, double **hyperlink_matrix, int *dangling_indexes, bool *is_dangling) {
-    // TODO: Is the boolean pointer necessary?
     *is_dangling = false; 
     // Iterate over each column
     for (int j = 0; j < N; j++) {

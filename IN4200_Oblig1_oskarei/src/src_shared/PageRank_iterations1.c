@@ -23,7 +23,7 @@ void PageRank_iterations1(int N, double **hyperlink_matrix, double d, double eps
     
     
     int convergence_count = 0;
-    double difference = 0.0;
+    double difference = 3.0;
     
     while (difference > epsilon) {
         int *dangling_indexes = (int *)malloc(N * sizeof(int));
@@ -34,7 +34,6 @@ void PageRank_iterations1(int N, double **hyperlink_matrix, double d, double eps
         
         bool is_dangling = false;
         get_dangling_pages1(N, hyperlink_matrix, dangling_indexes, &is_dangling);  
-        fprintf(stdout, "is_dangling: %d\n", is_dangling);
         
         // Sum of dangling pagerank scores
         double W_prev = 0.0;

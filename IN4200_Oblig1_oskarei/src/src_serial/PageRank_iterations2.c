@@ -29,7 +29,7 @@ void PageRank_iterations2(int N, int *row_ptr, int *col_idx, double *val, double
     }
     
     int convergence_count = 0;
-    double difference = 0.0;
+    double difference = 3.0;
     while (difference > epsilon) {
         if (convergence_count > 10000) {
             printf("WARNING: Convergence not reached within 10000 iterations\n");
