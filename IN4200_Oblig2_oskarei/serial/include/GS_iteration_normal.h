@@ -1,0 +1,1 @@
+void GS_iteration_normal(int kmax, int jmax, int imax, double ***phi);
