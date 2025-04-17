@@ -1,15 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <stdbool.h>
 
 void check_args(char *filename, double *d, double *epsilon, int *num_pages) { 
-    while (strcmp(filename, "small-webgraph.txt")  != 0 &&
-           strcmp(filename, "medium-webgraph.txt") != 0 &&
-           strcmp(filename, "large-webgraph.txt")  != 0) {
+    // Find all valid filenames in webgraphs/ directory 
+    struct dirent *file;  // Pointer for directory entry 
+  
+    DIR *dir = opendir("./webgraphs/"); 
+  
+    if (dir == NULL) { 
+        printf("Could not open 'webgraphs/' directory" ); 
+        exit(EXIT_FAILURE); 
+    } 
+  
+    bool found_file = false;
+    while ((file = readdir(dir)) != NULL) {
+        if (strstr(file->d_name, ".txt") != NULL) {
+            if (strcmp(file->d_name, filename) == 0) {
+                found_file = true;
+                closedir(dir);
+                break;
+            } 
+        }
+    }
 
-        fprintf(stderr, "Error: Invalid filename. Expected small-webgraph.txt, medium-webgraph.txt, or large-webgraph.txt. Got: %s\n", filename);
+    if (!found_file) {
+        fprintf(stderr, "Error: File %s not found in webgraphs/ directory.\n", filename);
+        fprintf(stderr, "The only files available are:\n");
+        dir = opendir("./webgraphs/");
+        while ((file = readdir(dir)) != NULL) {
+            if (strstr(file->d_name, ".txt") != NULL) {
+                printf("%s\n", file->d_name);
+            }
+        }
+        closedir(dir);
         exit(EXIT_FAILURE);
     }
+
 
     if (*d < 0.0 || *d > 1.0) {
         fprintf(stderr, "Error: Damping constant must be between 0.0 and 1.0. Got: %f\n", *d);
