@@ -1,5 +1,6 @@
 # Compiler settings
 CC = gcc
+CC_PARALLEL = mpicc
 CFLAGS = -Wall -Wextra -I./include -lm
 LDFLAGS = 
 
@@ -33,7 +34,7 @@ serial: $(OBJ_DIR_SERIAL) $(SERIAL_OBJS)
 
 # Parallel version
 parallel: $(OBJ_DIR_PARALLEL) $(PARALLEL_OBJS)
-	$(CC) $(CFLAGS) -fopenmp $(PARALLEL_OBJS) -o $(TARGET_PARALLEL) $(LDFLAGS)
+	$(CC_PARALLEL) $(CFLAGS) -fopenmp $(PARALLEL_OBJS) -o $(TARGET_PARALLEL) $(LDFLAGS)
 
 # Create object directories
 $(OBJ_DIR_SERIAL):
@@ -48,7 +49,7 @@ $(OBJ_DIR_SERIAL)/%.o: $(SRC_SERIAL_DIR)/%.c
 
 # Compile parallel source files
 $(OBJ_DIR_PARALLEL)/%.o: $(SRC_PARALLEL_DIR)/%.c
-	$(CC) $(CFLAGS) -I$(INCLUDE_PARALLEL_DIR) -fopenmp -c $< -o $@
+	$(CC_PARALLEL) $(CFLAGS) -I$(INCLUDE_PARALLEL_DIR) -fopenmp -c $< -o $@
 
 # Debug target
 debug: CFLAGS += -g -DDEBUG
