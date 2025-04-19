@@ -28,10 +28,22 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         // Default values
         *num_iters = 1000;
         *kmax = 4;
-        *jmax = 5;
-        *imax = 6;
+        *jmax = 6;
+        *imax = 8;
 
-        printf("**********************************************************************************\n");
+        // char *message;
+        // int len_message = asprintf(&message, "* No args provided. Using default values: num_iters=%d, kmax=%d, jmax=%d, imax=%d *", *num_iters, *kmax, *jmax, *imax);
+        // // int len_message = *(&message + 1) - message - 1;
+
+        // for (int i; i < len_message; i++) {printf("*");}
+        // printf("\n");
+        
+        // printf("%s\n", *message);
+
+        // for (int i; i < len_message; i++) {printf("*");}
+        // printf("\n\n");
+
+
         printf("*                                                                                *\n");
         printf("* No args provided. Using default values: num_iters=%d, kmax=%d, jmax=%d, imax=%d *\n", *num_iters, *kmax, *jmax, *imax);
         printf("*                                                                                *\n");
