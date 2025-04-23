@@ -11,14 +11,16 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         *imax = atoi(args[4]);
         
         // Check if the values are valid
-        if (*num_iters <= 0 || *kmax <= 2 || *jmax <= 0 || *imax <= 0) {
-            fprintf(stderr, "***************************************************************************************\n");
-            printf("*                                                                                     *\n");
-            fprintf(stderr, "* Invalid input values. Valid values are num_iters > 0, kmax > 2, jmax > 0, imax > 0. *\n");
-            fprintf(stderr, "* Usage: %s [num_iters] [kmax] [jmax] [imax]                             *\n", args[0]);
-            fprintf(stderr, "* Received: num_iters=%d, kmax=%d, jmax=%d, imax=%d                                     *\n", *num_iters, *kmax, *jmax, *imax);
-            printf("*                                                                                     *\n");
-            fprintf(stderr, "***************************************************************************************\n\n");
+        if (*num_iters <= 0 || *kmax <= 2 || *jmax <= 3 || *imax <= 2) {
+            fprintf(stderr, "***********************************************************\n");
+            fprintf(stderr, "* Invalid input values. Valid values are:                 *\n");
+            fprintf(stderr, "* num_iters > 0                                           *\n");
+            fprintf(stderr, "* kmax > 2                                                *\n");
+            fprintf(stderr, "* jmax > 3 (and divisible by 2)                           *\n");
+            fprintf(stderr, "* imax > 2                                                *\n");
+            fprintf(stderr, "* Usage: %s [num_iters] [kmax] [jmax] [imax] *\n", args[0]);
+            fprintf(stderr, "* Received: num_iters=%d, kmax=%d, jmax=%d, imax=%d         *\n", *num_iters, *kmax, *jmax, *imax);
+            fprintf(stderr, "***********************************************************\n\n");
             exit(EXIT_FAILURE);
         }
        
@@ -31,6 +33,7 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         *jmax = 6;
         *imax = 8;
 
+        // TODO:
         // char *message;
         // int len_message = asprintf(&message, "* No args provided. Using default values: num_iters=%d, kmax=%d, jmax=%d, imax=%d *", *num_iters, *kmax, *jmax, *imax);
         // // int len_message = *(&message + 1) - message - 1;

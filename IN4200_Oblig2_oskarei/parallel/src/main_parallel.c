@@ -1,12 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include "math.h"
 #include "../include/handle_input.h"
 #include "../include/print_array3D.h"
 #include "../include/allocate_array3D.h"
 #include "../include/euclidean_distance.h"
 #include "../include/GS_iteration_2_chunks.h"
 #include "../include/GS_iteration_2_chunks_mpi.h"
+
+/** TODO: 
+ * 1. Document use of Send/Recv
+ * 2. Split the code into multiple if statements
+ * 3. Docstring
+ * 4. README
+ * 5. Clean up commented out code
+ */
+
 
 int main(int nargs, char **args) {
     int num_iters, kmax, jmax, imax;
@@ -38,24 +48,39 @@ int main(int nargs, char **args) {
         handle_input(nargs, args, &num_iters, &kmax, &jmax, &imax);
 
         // Send the input values to process 1
+        printf("Pid:0 Sending input values to process 1...\n");
         MPI_Send(&num_iters, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
         MPI_Send(&kmax, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-        MPI_Send(&jmax, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+        MPI_Send(&jmax, 1, MPI_INT, 1, 0,        MPI_COMM_WORLD);
         MPI_Send(&imax, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
 
         // Allocate and initialize the first 3D array on process 0
         double ***my_array; 
-        double ***my_array2;
+        double ***my_array_benchmark;
         int my_jmax = jmax/2 + 1;
         allocate_array3D(kmax, my_jmax, imax, &my_array);
-        allocate_array3D(kmax, jmax, imax, &my_array2);
+        // Initialize the first half of the 3D array to match the left half it is supposed to represent
+        for (int k = 0; k < kmax; k++) {
+            for (int j = 0; j < my_jmax; j++) {
+                for (int i = 0; i < imax; i++) {
+                    my_array[k][j][i] = pow(k*jmax*imax + 
+                                            j*imax + 
+                                            i, 1); 
+                }
+            }
+        }
+        printf("Pid:0 left array:\n");
+        print_array3D(kmax, my_jmax, imax, my_array);
+        allocate_array3D(kmax, jmax, imax, &my_array_benchmark);
 
-        printf("Running iterations on process 0...\n");
+        printf("Pid:0 Running iterations...\n");
         // Compute the first half of the 3D array
         for (int n = 0; n < num_iters; n++) {
             GS_iteration_2_chunks_mpi(my_rank, kmax, my_jmax, imax, my_array);
-            GS_iteration_2_chunks(kmax, jmax, imax, my_array2);
+            GS_iteration_2_chunks(kmax, jmax, imax, my_array_benchmark);
         }
+        // printf("my_array after iterations:\n");
+        // print_array3D(kmax, my_jmax, imax, my_array);
 
         // Receive the results from process 1 and store in temp array 
         double ***recieved_array;
@@ -67,56 +92,59 @@ int main(int nargs, char **args) {
         int tag = 0; // The tag for the message. Used for filtering what messages to recieve, but is not important as we only receive one message. Could be set to MPI_ANY_TAG as well
         MPI_Comm comn = MPI_COMM_WORLD; // The communicator for the message; world communicator
         MPI_Status *status = MPI_STATUS_IGNORE; // Pointer to status object containing info on the recieved message. We ignore status since it's not used
-        printf("Receiving results from process 1...\n");
+        printf("Pid:0 Receiving results from process 1...\n");
         for (int k = 0; k < kmax; k++) {
             for (int j = 0; j < my_jmax; j++) {
                 MPI_Recv(recieved_array[k][j], num_values, data_type, source_process, tag, comn, status);
             }
         }
+        // printf("Pid:0 Right array:\n");
+        // print_array3D(kmax, my_jmax, imax, recieved_array);
 
         // Construct the global array from the two halves
+        printf("Pid:0 Constructing global array...\n");
         double ***global_array;
-        int global_jmax = jmax; 
-        allocate_array3D(kmax, global_jmax, imax, &global_array);
-        printf("Constructing global array...\n");
-        for (int k = 0; k < kmax; k++) {
+        allocate_array3D(kmax, jmax, imax, &global_array);
+        printf("Pid:0 global array:\n");
+        print_array3D(kmax, jmax, imax, global_array);
+        printf("my_jmax=%d, global_jmax=%d\n", my_jmax, jmax);
+        for (int k = 2; k < kmax; k++) {
             for (int j = 0; j < my_jmax; j++) {
-                continue; 
                 // TODO: Copy 
+                continue;
+            }
                 // Copy the left half from process 0
                 // Copy the right half from process 1
-            }
         }
 
-        // Compare with normal version
-        printf("Comparing results...\n");
+        
         printf("num iters=%d, kmax=%d, jmax=%d, imax=%d, diff=%g\n",
-        num_iters, kmax, jmax, imax, euclidean_distance(kmax, jmax, imax, my_array2, global_array));
+        num_iters, kmax, jmax, imax, euclidean_distance(kmax, jmax, imax, my_array_benchmark, global_array));
 
         
-        printf("Freeing allocated arrays on process 0...\n");
+        printf("Pid:0 Freeing allocated arrays...\n");
         // Free the allocated arrays
         for (int k = 0; k < kmax; k++) {
             for (int j = 0; j < my_jmax; j++) {
                 free(my_array[k][j]);
-                free(my_array2[k][j]);
+                free(my_array_benchmark[k][j]);
                 free(global_array[k][j]);
                 free(recieved_array[k][j]);
             }
             free(my_array[k]);
-            free(my_array2[k]);
+            free(my_array_benchmark[k]);
             free(global_array[k]);
             free(recieved_array[k]);
         }
         free(my_array);
-        free(my_array2);
+        free(my_array_benchmark);
         free(global_array);
         free(recieved_array);
     }
-    
+ 
     if (my_rank == 1) {
         // Receive the input values from process 0
-        printf("Receiving input values from process 0...\n");
+        printf("Pid:1 Receiving input values from process 0...\n");
         MPI_Recv(&num_iters, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(&kmax, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(&jmax, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -126,9 +154,23 @@ int main(int nargs, char **args) {
         double ***my_array;
         int my_jmax = jmax/2 + 1;
         allocate_array3D(kmax, my_jmax, imax, &my_array);
-        printf("Running iterations on process 1...\n");
 
+        // Re-initialize the second half of the 3D array to match the right half it is supposed to represent
+        for (int k = 0; k < kmax; k++) {
+            for (int j = 0; j < my_jmax; j++) {
+                for (int i = 0; i < imax; i++) {
+                    my_array[k][j][i] = pow(k*jmax*imax + 
+                                            j*imax + 
+                                            i + (my_jmax-2)*imax, 1); 
+                }
+            }
+        }
+        printf("Pid:1 right array:\n");
+        print_array3D(kmax, my_jmax, imax, my_array);
+
+        
         // Compute the second half of the 3D array
+        printf("Pid:1 Running iterations...\n");
         for (int n = 0; n < num_iters; n++) {
             GS_iteration_2_chunks_mpi(my_rank, kmax, my_jmax, imax, my_array);
         }
@@ -139,14 +181,14 @@ int main(int nargs, char **args) {
         int destination_process = 0; // The rank of the process recieving the data
         int tag = 0; // The tag for the message. Used for filtering what messages to recieve, but is not important as we only send one message. Could be set to MPI_ANY_TAG as well
         MPI_Comm comn = MPI_COMM_WORLD; // The communicator for the message; world communicator
-        printf("Sending results to process 0...\n");
+        printf("Pid:1 Sending results to process 0...\n");
         for (int k = 0; k < kmax; k++) {
             for (int j = 0; j < my_jmax; j++) {
                 MPI_Send(my_array[k][j], num_values, data_type, destination_process, tag, comn);
             }
         }
 
-        printf("Freeing allocated arrays on process 1...\n");
+        printf("Pid:1 Freeing allocated arrays...\n");
         // Free the allocated arrays
         for (int k = 0; k < kmax; k++) {
             for (int j = 0; j < my_jmax; j++) {
@@ -157,85 +199,6 @@ int main(int nargs, char **args) {
         free(my_array);
     }
 
-
-
-
-
-
-    // // Testing sending and receiving messages
-    // int message;
-    // if (my_rank == 0) {
-    //     message = 42; // Example message
-    //     MPI_Send(&message, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-    //     printf("Process %d sent message %d to process 1\n", my_rank, message);
-    // } else if (my_rank == 1) {
-    //     MPI_Recv(&message, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //     printf("Process %d received message %d from process 0\n", my_rank, message);
-    // }
-
-    // int N = 3; 
-    // int M = 4;
-    // // Allocate a 2D array (matrix) of size N x M in shared memory
-    // int **matrix = (int **)malloc(N * sizeof(int *));
-    // for (int i = 0; i < N; i++) {
-    //     matrix[i] = (int *)malloc(M * sizeof(int));
-    // }
-
-    // if (my_rank == 0) {   
-    //     // Initialize the matrix with some values in the first process only 
-    //     for (int i = 0; i < N; i++) {
-    //         for (int j = 0; j < M; j++) {
-    //             matrix[i][j] = i*N + j;
-    //         }
-    // }
-    //     // Print the matrix
-    //     printf("Matrix before sending:\n");
-    //     for (int i = 0; i < N; i++) {
-    //         for (int j = 0; j < M; j++) {
-    //             printf("%d ", matrix[i][j]);
-    //         }
-    //         printf("\n");
-    //     }
-
-    //     // Send the matrix to process 1, row by row
-    //     for (int i = 0; i < N; i++) {
-    //         MPI_Send(matrix[i], M, MPI_INT, 1, 0, MPI_COMM_WORLD);
-    //     }
-    // }
-
-    // if (my_rank == 1) {
-    //     // Receive the matrix on process 1
-    //     for (int i = 0; i < N; i++) {
-    //         MPI_Recv(matrix[i], M, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //     }
-    //     // Print the matrix after receiving
-    //     printf("Matrix after receiving:\n");
-    //     for (int i = 0; i < N; i++) {
-    //         for (int j = 0; j < M; j++) {
-    //             printf("%d ", matrix[i][j]);
-    //         }
-    //         printf("\n");
-    //     }
-    // }
-
-
-
-
-
-    // allocate_array3D(kmax, jmax, imax, &arr1);
-    // allocate_array3D(kmax, jmax, imax, &arr2);
-    // printf("Initial values of arr1:\n");
-    // print_array3D(kmax, jmax, imax, arr1);
-
-    // printf("Initial values of arr2::\n");
-    // print_array3D(kmax, jmax, imax, arr2);
-
-    // for (int n = 0; n < num_iters; n++) {
-    //     GS_iteration_2_chunks(kmax, jmax, imax, arr2);
-    //     GS_iteration_2_chunks_mpi(kmax, jmax, imax, arr1);
-    // }
-    // printf("num iters=%d, kmax=%d, jmax=%d, imax=%d, diff=%g\n",
-    // num_iters, kmax, jmax, imax, euclidean_distance(kmax, jmax, imax, arr1, arr2));
     MPI_Finalize();
     return 0;
 }

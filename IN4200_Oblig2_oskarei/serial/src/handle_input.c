@@ -43,7 +43,7 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         // for (int i; i < len_message; i++) {printf("*");}
         // printf("\n\n");
 
-
+        printf("**********************************************************************************\n");
         printf("*                                                                                *\n");
         printf("* No args provided. Using default values: num_iters=%d, kmax=%d, jmax=%d, imax=%d *\n", *num_iters, *kmax, *jmax, *imax);
         printf("*                                                                                *\n");
