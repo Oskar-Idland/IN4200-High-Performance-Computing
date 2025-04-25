@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "../include/print_array3D.h"
 
 void print_array3D(int kmax, int jmax, int imax, double ***arr) {
     for (int k = 0; k < kmax; k++) {

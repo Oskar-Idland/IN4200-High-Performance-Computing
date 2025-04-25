@@ -1,4 +1,5 @@
 #include <math.h>
+#include "../include/euclidean_distance.h"
 
 double euclidean_distance(int kmax, int jmax, int imax, double ***arr1, double ***arr2) {
     double sum = 0.0;

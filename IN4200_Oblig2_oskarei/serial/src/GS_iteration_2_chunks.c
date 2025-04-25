@@ -1,3 +1,5 @@
+#include "../include/GS_iteration_2_chunks.h"
+
 void GS_iteration_2_chunks(int kmax, int jmax, int imax, double ***phi) {
     // first wavefront: only computation on left chunk at level k=1
     for (int j=1; j<jmax-1; j++) {

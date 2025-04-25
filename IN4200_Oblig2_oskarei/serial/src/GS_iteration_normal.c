@@ -1,3 +1,5 @@
+#include "../include/GS_iteration_2_chunks.h"
+
 void GS_iteration_normal(int kmax, int jmax, int imax, double ***phi) {
     int k,j,i;
     for (k=1; k<kmax-1; k++) {

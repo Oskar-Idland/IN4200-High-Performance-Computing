@@ -1,1 +1,1 @@
-double euclidean_distance(int kmax, int jmax, int imax, double ***arr1, double ***arr2);
+../../serial/include/euclidean_distance.h

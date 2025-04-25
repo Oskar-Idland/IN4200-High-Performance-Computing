@@ -1,1 +1,1 @@
-void allocate_array3D(int kmax, int jmax, int imax, double ****array);
+../../serial/include/allocate_array3D.h

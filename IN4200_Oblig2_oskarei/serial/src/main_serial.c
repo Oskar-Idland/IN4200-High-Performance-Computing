@@ -27,5 +27,17 @@ int main(int nargs, char **args) {
     
     printf("num iters=%d, kmax=%d, jmax=%d, imax=%d, diff=%g\n",
     num_iters, kmax, jmax, imax, euclidean_distance(kmax, jmax, imax, arr1, arr2));
+    
+    for (int k = 0; k < kmax; k++) {
+        for (int j = 0; j < jmax; j++) {
+            free(arr1[k][j]);
+            free(arr2[k][j]);
+        }
+        free(arr1[k]);
+        free(arr2[k]);
+    }
+    free(arr1);
+    free(arr2);
+    
     return 0;
 }

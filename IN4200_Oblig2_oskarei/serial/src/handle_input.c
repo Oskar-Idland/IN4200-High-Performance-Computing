@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../include/handle_input.h"
 
 void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, int *imax) {
     // Check number of arguments 
@@ -11,10 +12,10 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         *imax = atoi(args[4]);
         
         // Check if the values are valid
-        if (*num_iters <= 0 || *kmax <= 2 || *jmax <= 0 || *imax <= 0) {
+        if (*num_iters <= 0 || *kmax <= 3 || *jmax <= 0 || *imax <= 0) {
             fprintf(stderr, "***************************************************************************************\n");
             printf("*                                                                                     *\n");
-            fprintf(stderr, "* Invalid input values. Valid values are num_iters > 0, kmax > 2, jmax > 0, imax > 0. *\n");
+            fprintf(stderr, "* Invalid input values. Valid values are num_iters > 0, kmax > 3, jmax > 0, imax > 0. *\n");
             fprintf(stderr, "* Usage: %s [num_iters] [kmax] [jmax] [imax]                               *\n", args[0]);
             fprintf(stderr, "* Received: num_iters=%d, kmax=%d, jmax=%d, imax=%d                                      *\n", *num_iters, *kmax, *jmax, *imax);
             printf("*                                                                                     *\n");

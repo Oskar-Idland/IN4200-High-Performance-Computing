@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "math.h"
+#include "../include/allocate_array3D.h"
 
 void allocate_array3D(int kmax, int jmax, int imax, double ****array) {
     // Allocate memory for the 3D array
@@ -29,8 +30,8 @@ void allocate_array3D(int kmax, int jmax, int imax, double ****array) {
         for (int j = 0; j < jmax; j++) {
             for (int i = 0; i < imax; i++) {
                 (*array)[k][j][i] = (double)pow(k * jmax * imax + 
-                                             j * imax + 
-                                             i, 2);
+                                                j * imax + 
+                                                i, 2);
             }
         }
     }
