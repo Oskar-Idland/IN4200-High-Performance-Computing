@@ -73,7 +73,6 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         }
     }
 
-
     // If the number of arguments is not 1, 2, 5, or 6, print an error message
     else {
         char *message;

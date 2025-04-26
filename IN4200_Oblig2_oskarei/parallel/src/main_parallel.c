@@ -11,10 +11,8 @@
 #include "../include/GS_iteration_2_chunks_mpi.h"
 
 /** TODO: 
- * 1. Docstring
- * 2. README
- * 3. Clean up commented out code
- * 4. Zip project
+ * 1. Clean up commented out code
+ * 2. Zip project
  */
 
 
@@ -55,6 +53,7 @@ int main(int nargs, char **args) {
         handle_input(nargs, args, &num_iters, &kmax, &jmax, &imax, &print_verbose);
 
         if (print_verbose) {
+            // Print the rank and number of processes
             char *message;
             int len_message = asprintf(&message, "~ Starting process %d of %d on %s ~\n", my_rank, num_procs-1, processor_name);
             for (int i = 0; i < len_message-1; i++) {printf("~");}
@@ -68,12 +67,11 @@ int main(int nargs, char **args) {
         destination_process = 1; 
 
 
-
-        // Send the input values to process 1
         if (print_verbose) {printf("Pid:0 Sending input args to process 1...\n");}
         int num_values = 1;
         MPI_Datatype data_type = MPI_INT;
         int tag = 0; 
+        // Send the input values to process 1
         MPI_Send(&num_iters, num_values, data_type, destination_process, tag, comn);
         MPI_Send(&kmax, num_values, data_type, destination_process, tag, comn);
         MPI_Send(&jmax, num_values, data_type, destination_process, tag, comn);
@@ -86,6 +84,7 @@ int main(int nargs, char **args) {
         int my_jmax = jmax/2 + 1;
         if (print_verbose) {printf("Pid:0 Allocating memory for my_array...\n");}
         allocate_array3D(kmax, my_jmax, imax, &my_array);
+        
         // Initialize the first half of the 3D array to match the left half it is supposed to represent
         if (print_verbose) {printf("Pid:0 Re-initializing my_array...\n");}
         for (int k = 0; k < kmax; k++) {
@@ -97,6 +96,7 @@ int main(int nargs, char **args) {
                 }
             }
         }
+        
         if (print_verbose) {printf("Pid:0 Allocating memory for my_array_benchmark...\n");}
         allocate_array3D(kmax, jmax, imax, &my_array_benchmark);
 
@@ -177,6 +177,7 @@ int main(int nargs, char **args) {
         MPI_Recv(&jmax, num_values, data_type, source_process, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(&imax, num_values, data_type, source_process, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(&print_verbose, num_values, MPI_C_BOOL, source_process, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        
         if (print_verbose) {
             char *message;
             int len_message = asprintf(&message, "~ Starting process %d of %d on %s ~\n", my_rank, num_procs-1, processor_name);
@@ -186,16 +187,15 @@ int main(int nargs, char **args) {
             for (int i = 0; i < len_message-1; i++) {printf("~");}
             printf("\n");
         }
+
         if (print_verbose) {printf("Pid:1 Recieved input args from process 0...\n");}
-
-
-
 
         // Allocate and initialize the second 3D array on process 1
         double ***my_array;
         int my_jmax = jmax/2 + 1;
         if (print_verbose) {printf("Pid:1 Allocating memory for my_array...\n");}
         allocate_array3D(kmax, my_jmax, imax, &my_array);
+        
         // Re-initialize the second half of the 3D array to match the right half it is supposed to represent
         for (int k = 0; k < kmax; k++) {
             for (int j = 0; j < my_jmax; j++) {

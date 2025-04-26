@@ -21,7 +21,7 @@ void GS_iteration_2_chunks_mpi(int my_rank, int kmax, int my_jmax, int imax, dou
             }
         }
         // Sending the second to last row at k = 1 to process 1 
-        tag = 2; 
+        tag = 2; // Choosing a specific tag for level k=1
         MPI_Send(my_phi[1][my_jmax-2], count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
 
 
@@ -29,7 +29,7 @@ void GS_iteration_2_chunks_mpi(int my_rank, int kmax, int my_jmax, int imax, dou
         // computation on left chunk at level k
         for (int k=2; k<=kmax-2; k++) {
             // Receiving the first row at k - 1 from process 1
-            tag = 3;
+            tag = 3; // Choosing a specific tag for level k-1
             source = 1;
             MPI_Recv(my_phi[k-1][my_jmax-1], count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -41,7 +41,7 @@ void GS_iteration_2_chunks_mpi(int my_rank, int kmax, int my_jmax, int imax, dou
                 }
             }
 
-            tag = 4;
+            tag = 4; // Choosing a specific tag for level k
             MPI_Send(my_phi[k][my_jmax-2], count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
         }
 
@@ -72,10 +72,10 @@ void GS_iteration_2_chunks_mpi(int my_rank, int kmax, int my_jmax, int imax, dou
                     }                
                 }
             // Sending the first row at k - 1 to process 0
-            tag = 3;
+            tag = 3; // Choosing a specific tag for level k-1
             MPI_Send(my_phi[k-1][1], count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
 
-            tag = 4;
+            tag = 4; // Choosing a specific tag for level k
             MPI_Recv(my_phi[k][0], count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
 
