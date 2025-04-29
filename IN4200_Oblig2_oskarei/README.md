@@ -98,7 +98,7 @@ There are two ways to run the serial implementation.
     <summary>Output</summary>
 
     ```
-    num iters=10, kmax=100, jmax=1000, imax=100, diff=1.92796e+14
+    num iters=10, kmax=100, jmax=1000, imax=100, diff=0
     ```
     </details>
 
@@ -143,7 +143,7 @@ There are three ways to run the parallel implementation.
     <summary>Output</summary>
 
     ```
-    num iters=10, kmax=100, jmax=1000, imax=100, diff=1.92796e+14
+    num iters=10, kmax=100, jmax=1000, imax=100, diff=0
     ```
     </details>
 
@@ -226,21 +226,7 @@ There are three ways to run the parallel implementation.
 
 # Results 
 ## Serial Implementation
-The serial implementation found that the difference between the normal Gauss-Seidel algorithm and the two-chunk Gauss-Seidel converged to 0 as we incereased the number of iterations. This makes the two-chunk Gauss-Seidel algorithm a valid benchmark for the parallel implementation. 
-
-### `num_iters=1`
-```
-./main_serial 1 6 8 10
-```
-<details open>
-<summary>Output</summary>
-
-```
-num iters=1, kmax=6, jmax=8, imax=10, diff=38607.3
-```
-</details>
-
-### `num_iters=10`
+The serial implementation showed zero difference in the calculations made by the two-chunk and regular Gauss-Seidel no matter the number of interations. This makes the two-chunk Gauss-Seidel algorithm a valid benchmark for the parallel implementation. 
 
 ```
 ./main_serial 10 6 8 10
@@ -249,52 +235,12 @@ num iters=1, kmax=6, jmax=8, imax=10, diff=38607.3
 <summary>Output</summary>
 
 ```
-num iters=10, kmax=6, jmax=8, imax=10, diff=19799.6
+num iters=10, kmax=6, jmax=8, imax=10, diff=0
 ```
 </details>
-
-### `num_iters=100`
-```
-./main_serial 100 6 8 10
-```
-<details open>
-<summary>Output</summary>
-
-```
-num iters=100, kmax=6, jmax=8, imax=10, diff=4.47956e-06
-```
-</details>
-
-### `num_iters=1000`
-```
-./main_serial 1000 6 8 10
-```
-
-<details open>
-<summary>Output</summary>
-
-```
-num iters=1000, kmax=6, jmax=8, imax=10, diff=0
-```
-</details>
-
 
 ## Parallel Implementation
-The parallel implementation found that the difference between the normal Gauss-Seidel algorithm and the two-chunk MPI Gauss-Seidel converged to 0 in the excact same way as the serial implementation. We conclude the parallel implementation is correct.
-
-### `num_iters=1`
-```
-mpirun -n 2 ./main_parallel 1 6 8 10
-```
-<details open>
-<summary>Output</summary>
-
-```
-num iters=1, kmax=6, jmax=8, imax=10, diff=38607.3
-```
-</details>
-
-### `num_iters=10`
+The parallel implementation found no difference in the calculations made by the regular and the MPI two-chunks GS algorithm.
 
 ```
 mpirun -n 2 ./main_parallel 10 6 8 10
@@ -303,34 +249,10 @@ mpirun -n 2 ./main_parallel 10 6 8 10
 <summary>Output</summary>
 
 ```
-num iters=10, kmax=6, jmax=8, imax=10, diff=19799.6
+num iters=10, kmax=6, jmax=8, imax=10, diff=0
 ```
 </details>
 
-### `num_iters=100`
-```
-mpirun -n 2 ./main_parallel 100 6 8 10
-```
-<details open>
-<summary>Output</summary>
-
-```
-num iters=100, kmax=6, jmax=8, imax=10, diff=4.47956e-06
-```
-</details>
-
-### `num_iters=1000`
-```
-mpirun -n 2 ./main_parallel 1000 6 8 10
-```
-
-<details open>
-<summary>Output</summary>
-
-```
-num iters=1000, kmax=6, jmax=8, imax=10, diff=0
-```
-</details>
 
 # Conclusion
 The project was a success, as we were able to implement the Gauss-Seidel algorithm in both serial and parallel using MPI. The results of the two implementations were consistent with each other, as the parallel implementation was able to reproduce the results of the serial implementation.

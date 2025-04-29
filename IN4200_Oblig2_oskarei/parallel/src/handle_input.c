@@ -20,7 +20,7 @@ void handle_input(int nargs, char **args, int *num_iters, int *kmax, int *jmax, 
         *print_verbose = false;
         
         // Check if the values are valid
-        if (*num_iters <= 0 || *kmax <= 2 || *jmax <= 3 || *imax <= 2) {
+        if (*num_iters <= 0 || *kmax <= 2 || *kmax % 2 != 0 || *jmax <= 3 || *imax <= 2) {
             fprintf(stderr, "***********************************************************\n");
             fprintf(stderr, "* Invalid input values. Valid values are:                 *\n");
             fprintf(stderr, "* num_iters > 0                                           *\n");

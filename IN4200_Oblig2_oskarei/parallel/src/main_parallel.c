@@ -10,11 +10,6 @@
 #include "../include/GS_iteration_2_chunks.h"
 #include "../include/GS_iteration_2_chunks_mpi.h"
 
-/** TODO: 
- * 1. Clean up commented out code
- * 2. Zip project
- */
-
 
 int main(int nargs, char **args) {
     int num_iters, kmax, jmax, imax;
@@ -130,20 +125,21 @@ int main(int nargs, char **args) {
         for (int k = 1; k < kmax-1; k++) {
             for (int j = 1; j < jmax-1; j++) {
                 for (int i = 1; i < imax-1; i++) {
-                if (j < my_jmax-2) {
+                if (j < my_jmax - 1) {
                         // Copy the left half from process 0
                         global_array[k][j][i] = my_array[k][j][i];
                     } else {
                         // Copy the right half from process 1
-                        global_array[k][j][i] = recieved_array[k][j-my_jmax+2][i];
+                        global_array[k][j][i] = recieved_array[k][j - my_jmax + 2][i];
                     }
                 }
             }
         }
+
         printf("num iters=%d, kmax=%d, jmax=%d, imax=%d, diff=%g\n",
         num_iters, kmax, jmax, imax, euclidean_distance(kmax, jmax, imax, my_array_benchmark, global_array));
 
-        
+    
         // Free the allocated arrays
         if (print_verbose) {printf("Pid:0 Freeing memory...\n");}
         for (int k = 0; k < kmax; k++) {
